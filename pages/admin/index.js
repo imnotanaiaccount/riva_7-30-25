@@ -7,12 +7,14 @@ import Layout from '../../components/Layout';
 import LeadCard from '../../components/LeadCard';
 import UserManagement from '../../components/admin/UserManagement';
 import StatsOverview from '../../components/admin/StatsOverview';
+import LeadMagnets from '../../components/admin/LeadMagnets';
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('leads');
   const [leads, setLeads] = useState([]);
+  const [leadMagnets, setLeadMagnets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -36,6 +38,24 @@ export default function AdminDashboard() {
       }
     );
 
+    // Fetch lead magnets
+    const fetchLeadMagnets = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('lead_magnets')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setLeadMagnets(data || []);
+      } catch (err) {
+        console.error('Error fetching lead magnets:', err);
+        setError('Failed to load lead magnets');
+      }
+    };
+
+    fetchLeadMagnets();
+
     return () => unsubscribe();
   }, [user, isAdmin]);
 
@@ -49,132 +69,109 @@ export default function AdminDashboard() {
   if (authLoading || (user && !isAdmin)) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       </Layout>
     );
   }
 
-  if (!user) return null;
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-1">Manage users, leads, and system settings</p>
-          </div>
-          <div className="mt-4 md:mt-0">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Back to My Dashboard
-            </button>
-          </div>
-        </div>
-
-        {/* Stats Overview */}
-        <StatsOverview />
-
-        {/* Tabs */}
+        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+        
+        {/* Navigation Tabs */}
         <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex space-x-8">
-            {['leads', 'users', 'settings'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('leads')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'leads'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Leads
+            </button>
+            <button
+              onClick={() => setActiveTab('lead-magnets')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'lead-magnets'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Lead Magnets
+            </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'users'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              User Management
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'analytics'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Analytics
+            </button>
           </nav>
         </div>
 
-        {/* Error message */}
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-            <div className="flex">
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab content */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        {/* Tab Content */}
+        <div className="bg-white rounded-lg shadow p-6">
           {activeTab === 'leads' && (
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-medium text-gray-900">All Leads</h2>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => router.push('/leads/import')}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Import Leads
-                  </button>
-                  <button
-                    onClick={() => router.push('/leads/new')}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                  >
-                    Add New Lead
-                  </button>
-                </div>
-              </div>
-
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">Leads Overview</h2>
               {loading ? (
-                <div className="flex justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{error}</p>
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-6">
-                  {leads.length > 0 ? (
-                    leads.map((lead) => (
-                      <LeadCard 
-                        key={lead.id} 
-                        lead={lead} 
-                        isAdmin={true}
-                        onUpdate={() => {
-                          // Trigger a re-fetch on update
-                          setLeads(prevLeads => [...prevLeads]);
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      No leads found. Add your first lead to get started.
-                    </div>
-                  )}
+                <div className="space-y-4">
+                  {leads.map((lead) => (
+                    <LeadCard key={lead.id} lead={lead} isAdmin={true} />
+                  ))}
                 </div>
               )}
             </div>
           )}
 
-          {activeTab === 'users' && <UserManagement />}
-          
-          {activeTab === 'settings' && (
-            <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-6">System Settings</h2>
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-                <div className="flex">
-                  <div className="ml-3">
-                    <p className="text-sm text-yellow-700">
-                      Settings are coming soon. Check back later for more configuration options.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {activeTab === 'lead-magnets' && (
+            <LeadMagnets 
+              leadMagnets={leadMagnets} 
+              onLeadMagnetUpdate={(updated) => {
+                setLeadMagnets(leadMagnets.map(lm => 
+                  lm.id === updated.id ? updated : lm
+                ));
+              }}
+            />
           )}
+
+          {activeTab === 'users' && <UserManagement />}
+          {activeTab === 'analytics' && <StatsOverview />}
         </div>
       </div>
     </Layout>

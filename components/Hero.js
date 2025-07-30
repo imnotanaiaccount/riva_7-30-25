@@ -44,18 +44,9 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-16 md:pt-20 overflow-hidden bg-gradient-to-b from-gray-900 to-black">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-12 md:py-20">
+    <section className="relative min-h-[90vh] flex items-center pt-8 md:pt-12 overflow-hidden bg-gradient-to-b from-gray-900 to-black">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-8 md:py-12">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-900/30 text-blue-300 border border-blue-800/50 mb-6">
-            <span className="flex h-2 w-2 mr-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-            </span>
-            Currently serving 47 active clients
-          </div>
-
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
             Generate <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">High-Quality Leads</span> 
