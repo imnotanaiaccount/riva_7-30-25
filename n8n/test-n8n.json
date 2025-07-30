@@ -1,0 +1,148 @@
+{
+  "name": "Lead Capture & Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-capture",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        260
+      ],
+      "webhookId": "lead-capture-webhook"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.filter(item => item.json.newsletter === true);"
+      },
+      "id": "35a59392-cbb0-43ab-bc19-35d8fa9c5794",
+      "name": "Filter Newsletter Opt-ins",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        180,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@riva.com",
+        "toEmail": "hello@riva.com",
+        "subject": "New Lead: {{$json[\"name\"]}}",
+        "text": "Name: {{$json[\"name\"]}}\nEmail: {{$json[\"email\"]}}\nProject Type: {{$json[\"projectType\"]}}\nMessage: {{$json[\"message\"]}}\nNewsletter Opt-in: {{$json[\"newsletter\"]}}",
+        "options": {}
+      },
+      "id": "e9f5c21a-9360-4959-b3ea-9e6a4d54abb2",
+      "name": "Send Notification Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        200,
+        520
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "IRuDmZ3EF70GCZJN",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.brevo.com/v3/contacts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{$json[\"email\"]}}"
+            },
+            {
+              "name": "attributes",
+              "value": "={\"FIRSTNAME\": \"{{$json[\"name\"]}}\", \"PROJECT_TYPE\": \"{{$json[\"projectType\"]}}\"}"
+            },
+            {
+              "name": "listIds",
+              "value": "[3]"
+            },
+            {
+              "name": "updateEnabled",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "brevo-add-contact",
+      "name": "Add to Brevo List",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        400,
+        200
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter Newsletter Opt-ins",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Notification Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Newsletter Opt-ins": {
+      "main": [
+        [
+          {
+            "node": "Add to Brevo List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1bf70cef-89d6-44bf-a4c3-2a0d78c00162",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0632672ca2d45fb2ed185b7b5210ccd8b2d6467f2544c8fe4c065b12ab27edd8"
+  },
+  "id": "FFjIPO5DZYYKUYVH",
+  "tags": []
+}

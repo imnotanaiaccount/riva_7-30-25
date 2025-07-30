@@ -1,0 +1,23 @@
+{
+  "name": "riva-stripe-webhook-tests",
+  "version": "1.0.0",
+  "description": "Tests for Stripe webhook handler in Riva application",
+  "main": "stripe-webhook.test.js",
+  "scripts": {
+    "test": "mocha stripe-webhook.test.js",
+    "test:watch": "mocha --watch stripe-webhook.test.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.52.1",
+    "chai": "^4.5.0",
+    "dotenv": "^16.6.1",
+    "mocha": "^10.8.2",
+    "node-fetch": "^2.6.12",
+    "sinon": "^15.2.0",
+    "stripe": "^13.11.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": true
+}

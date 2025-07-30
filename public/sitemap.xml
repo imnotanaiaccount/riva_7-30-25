@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main Pages -->
+  <url>
+    <loc>https://rivaofficial.netlify.app/</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>https://rivaofficial.netlify.app/lead-magnet</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Services Pages -->
+  <url>
+    <loc>https://rivaofficial.netlify.app/services/web-design</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Add other service pages similarly -->
+  
+  <!-- Demo Pages -->
+  <url>
+    <loc>https://rivaofficial.netlify.app/demo-cleaning</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rivaofficial.netlify.app/demo-homeservices</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rivaofficial.netlify.app/demo-landscaping</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rivaofficial.netlify.app/demo-real-estate</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Legal Pages -->
+  <url>
+    <loc>https://rivaofficial.netlify.app/terms-of-use</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://rivaofficial.netlify.app/privacy-policy</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Login Page (lower priority) -->
+  <url>
+    <loc>https://rivaofficial.netlify.app/login</loc>
+    <lastmod>2025-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>
