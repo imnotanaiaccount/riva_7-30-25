@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>2FA Test Page</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2FA Test Page</h1>
+        
+        <div class="test-section">
+            <h2>1. Create Test User</h2>
+            <input type="email" id="testEmail" placeholder="Enter test email" value="testuser@example.com">
+            <button onclick="createTestUser()">Create Test User</button>
+            <div id="userResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Enable 2FA</h2>
+            <button onclick="enable2FA()">Enable 2FA for Test User</button>
+            <div id="qrCodeContainer" style="margin: 20px 0;"></div>
+            <div id="twofaResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Test Login</h2>
+            <p>Use these credentials to log in:</p>
+            <div id="loginInfo"></div>
+            <p>After logging in, you'll be prompted for a 2FA code. Use your authenticator app or a backup code.</p>
+        </div>
+    </div>
+
+    <script>
+        let testUserCredentials = null;
+
+        function logResult(elementId, message, isError = false) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.textContent = message;
+            resultDiv.className = 'result ' + (isError ? 'error' : 'success');
+            console.log(message);
+        }
+
+        async function createTestUser() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                alert('Please enter an email');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/api/test/create-test-user', { email });
+                testUserCredentials = response.data.user;
+                
+                // Display the user info
+                document.getElementById('loginInfo').innerHTML = `
+                    <p><strong>Email:</strong> ${testUserCredentials.email}</p>
+                    <p><strong>Password:</strong> ${testUserCredentials.password}</p>
+                    <p class="warning">Save this information! The password won't be shown again.</p>
+                `;
+                
+                logResult('userResult', `✅ Test user created successfully!\n\n` + 
+                    `Email: ${testUserCredentials.email}\n` +
+                    `Password: ${testUserCredentials.password}\n\n` +
+                    `IMPORTANT: Save these credentials!`);
+            } catch (error) {
+                logResult('userResult', `❌ Error: ${error.response?.data?.error || error.message}`, true);
+            }
+        }
+
+        async function enable2FA() {
+            if (!testUserCredentials) {
+                alert('Please create a test user first');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/api/test/enable-2fa', { 
+                    email: testUserCredentials.email 
+                });
+                
+                // Display QR code if available
+                if (response.data.qrCode) {
+                    document.getElementById('qrCodeContainer').innerHTML = 
+                        `<p>Scan this QR code with your authenticator app:</p>
+                         <img src="${response.data.qrCode}" alt="QR Code" style="max-width: 200px;">`;
+                }
+                
+                // Display backup codes
+                logResult('twofaResult', `✅ 2FA enabled successfully!\n\n` +
+                    `Backup codes (SAVE THESE SOMEWHERE SAFE):\n` +
+                    response.data.backupCodes?.join('\n') || 'No backup codes generated');
+                
+            } catch (error) {
+                logResult('twofaResult', `❌ Error: ${error.response?.data?.error || error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>
